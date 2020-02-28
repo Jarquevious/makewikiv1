@@ -6,6 +6,7 @@ from wiki.models import Page
 from wiki.forms import PageForm
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
+from django.urls import reverse, reverse_lazy
 
 
 
@@ -39,8 +40,12 @@ class PageCreateView(CreateView):
     return render(request, 'new_page.html', context)
 
 
-  def post(self, request):
-    pass
+  def post(self, request, *args, **kwargs):
+    form = PageForm(request.POST)
+    if form.is_valid():
+      new_wiki_page = form.save()
+      return HttpResponseRedirect(reverse_lazy('wiki:wiki-details-page', args=[new_wiki_page.slug]))
+    return render(request, 'new_page.html', {'form':form})
 
   #   if request.method == "POST":
   #     form = PageForm(request.POST)
